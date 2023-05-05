@@ -1,0 +1,29 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Update and Upgrade Package Manager on Ubuntu
+      tags: always
+      apt:
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Update and Upgrade Package Manager on CentOS
+      tags: always
+      dnf:
+        update_only: yes
+        update_cache: yes
+      when: ansible_distribution == "CentOS"
+    
+    - name: Install Apache on Ubuntu and CentOS servers
+      package:
+        name:
+          - "{{ apache_package }}"
+        state: latest
+
+    - name: Start Apache
+      tags: apache
+      service:
+        name: "{{ apache_package }}"
+        state: started
+        enabled: yes
