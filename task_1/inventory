@@ -1,1 +1,5 @@
-18.207.115.221
+[ubuntu-server]
+18.207.115.221 ansible_ssh_user=ubuntu apache_package=apache2
+
+[centos-server]
+54.210.32.228 ansible_ssh_user=ec2-user apache_package=httpd 

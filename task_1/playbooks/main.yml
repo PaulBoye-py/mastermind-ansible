@@ -2,24 +2,53 @@
 - hosts: all
   become: true
   tasks:
+    - name: Create a padar user
+      tags: always
+      user:
+        name: padar
+        groups: root
+
+    - name: Add SSH Keys for padar
+      tags: always
+      authorized_key:
+        user: padar
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDZFkQ2aczVLgtaTEuzNKWHz0Vxmt/DDg7SU/SHGZ+yo/pGKmjKlC4Vzbvzwfe4ZaIo7+3Gq1E+F1hMx8zMXCGU8NCfzfEVByavjcbUVJSnGHvgYdaT1pQjiV0gjSMCgpVO691HHe9yV82eBD63Lp7KxgA6J09FLw7TOYsuHLzDyBQL6o8Tftg0HeerruGKgcVdz7xvL4UZeaNJNnZJDJYMFT0xG6UK2cQ1Uo/4HCDFy/Nee80aFHrpAapZbMypBni4dzhwgOnncnH8jrRNip8l8G/zVE/9+rXPjomWxiJqu13FButl99n/+lcF1vxu44/GUytA4K9IrN8gpveSOkbF0pzvUb2kTezHFliqLmltS3R66Qdr6I5Dt+wFaZmXIujroC5uPLDee0gRtmYPIvUSWIdz5HTg9M5IMu3LAQFsM47v8DxjthjHoS/cQfYEa/LMEZVT3hwwfxbWEH3tE1o1YasjH9FhYvpe/HHU6QwVuxxjKpVlixRJDv+T9Edn5hU= vagrant@main"
+
+    - name: Add Sudoers file for padar
+      tags: always
+      copy:
+        src: ../files/sudoer_padar
+        dest: /etc/sudoers.d/padar
+        owner: root
+        group: root
+        mode: 0440
+
     - name: Update and Upgrade Package Manager on Ubuntu
       tags: always
       apt:
         update_cache: yes
       when: ansible_distribution == "Ubuntu"
 
-    - name: Update and Upgrade Package Manager on CentOS
+    - name: Update and Upgrade Package Manager on Amazon
       tags: always
       dnf:
         update_only: yes
         update_cache: yes
-      when: ansible_distribution == "CentOS"
+      when: ansible_distribution == "Amazon"
     
-    - name: Install Apache on Ubuntu and CentOS servers
-      package:
+    - name: Install Apache on Ubuntu 
+      apt:
         name:
           - "{{ apache_package }}"
         state: latest
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install Apache on Amazon Linux
+      dnf:
+        name: 
+          - "{{ apache_package }}"
+        state: latest
+      when: ansible_distribution == "Amazon"
 
     - name: Start Apache
       tags: apache
@@ -27,3 +56,11 @@
         name: "{{ apache_package }}"
         state: started
         enabled: yes
+
+    - name: Copy custom html files
+      copy:
+        src: ../files/site.html
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: 0664
