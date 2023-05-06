@@ -12,7 +12,7 @@
       tags: always
       authorized_key:
         user: padar
-        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDZFkQ2aczVLgtaTEuzNKWHz0Vxmt/DDg7SU/SHGZ+yo/pGKmjKlC4Vzbvzwfe4ZaIo7+3Gq1E+F1hMx8zMXCGU8NCfzfEVByavjcbUVJSnGHvgYdaT1pQjiV0gjSMCgpVO691HHe9yV82eBD63Lp7KxgA6J09FLw7TOYsuHLzDyBQL6o8Tftg0HeerruGKgcVdz7xvL4UZeaNJNnZJDJYMFT0xG6UK2cQ1Uo/4HCDFy/Nee80aFHrpAapZbMypBni4dzhwgOnncnH8jrRNip8l8G/zVE/9+rXPjomWxiJqu13FButl99n/+lcF1vxu44/GUytA4K9IrN8gpveSOkbF0pzvUb2kTezHFliqLmltS3R66Qdr6I5Dt+wFaZmXIujroC5uPLDee0gRtmYPIvUSWIdz5HTg9M5IMu3LAQFsM47v8DxjthjHoS/cQfYEa/LMEZVT3hwwfxbWEH3tE1o1YasjH9FhYvpe/HHU6QwVuxxjKpVlixRJDv+T9Edn5hU= vagrant@main"
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCtq98LSrHeNcXW+dSg1fraZOPljHB+ZGoNRubtSbZ/75QnLcX7xPsErZm1hNNC7RFJLucU71kTjG4x+PKT/zScmI892ONmjlfrVLzlpKZ5A8LpbAScOQBpyPSbax6cJc5PqOhlOf48eFB/l60bMG/IsjELUU8uIjNBvPbI+HIByzVPj3MBH1rrI+4wgTg1HZQA2/YrejVY21edqafRzyyYY/rrY+RWd/IJPF8Waq6RL8BimSsnQ/LvQJCafm0eiPlbdRBSopEmG5ay2tcIe/IRWtOm0fjDtA8jgvQS4tI/58WgHklFnR6OZaU3E2GT33NvfKR71gTi5Gx9v8yEqynZDe1eix6f1oqaz7RixaHGLgYccm85i+lyDISOOiZRuLLSTWE/MnB9S8icGXJrNnIBC7C94Zm/3FKN6j9NFFwdBaF89HCnRjx32j7XCHz69NxYymv5Sjmlr3fIaZ04Y6/d4cYNyczv8iPZdrhPEA+0WlCHJDJTM7W01rGJQtRF540= vagrant@main"
 
     - name: Add Sudoers file for padar
       tags: always
@@ -29,26 +29,18 @@
         update_cache: yes
       when: ansible_distribution == "Ubuntu"
 
-    - name: Update and Upgrade Package Manager on Amazon
+    - name: Update and Upgrade Package Manager on CentOS
       tags: always
-      dnf:
+      yum:
         update_only: yes
         update_cache: yes
-      when: ansible_distribution == "Amazon"
+      when: ansible_distribution == "CentOS"
     
-    - name: Install Apache on Ubuntu 
-      apt:
+    - name: Install Apache on Ubuntu and CentOS
+      package:
         name:
           - "{{ apache_package }}"
         state: latest
-      when: ansible_distribution == "Ubuntu"
-
-    - name: Install Apache on Amazon Linux
-      dnf:
-        name: 
-          - "{{ apache_package }}"
-        state: latest
-      when: ansible_distribution == "Amazon"
 
     - name: Start Apache
       tags: apache
